@@ -369,9 +369,9 @@
       this.banana = null;
       this.angle = null;
       this.connector = this.callingObj.connector;
-      console.log("ID: " + this.callingObj.Id);
       if (this.callingObj.getRound() <= 0) {
         this.callingObj.setId(this.connector.submitAuthentication());
+        console.log("ID: " + this.callingObj.getId());
       }
       this.easelStage = new Stage(canvas);
       this.infoBar = this.addInfoBar();

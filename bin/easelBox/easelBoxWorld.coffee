@@ -22,9 +22,9 @@ class window.EaselBoxWorld
     @angle = null
     
     @connector = @callingObj.connector
-   	console.log "ID: " + @callingObj.Id
    	if @callingObj.getRound() <= 0
    		@callingObj.setId(@connector.submitAuthentication())
+   		console.log "ID: " + @callingObj.getId()
     
     # set up EaselJS
     @easelStage = new Stage(canvas)

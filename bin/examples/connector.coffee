@@ -12,9 +12,10 @@ class window.Connector
 		type: "POST"
 		dataType: 'html'
 		async: false
-		request: 'authenticate'
-		round: @game.getRound()
-		stage: @game.getStage()
+		data:
+			request: 'authenticate'
+			round: @game.getRound()
+			stage: @game.getStage()
 		error: (jqXHR, textStatus, errorThrown) =>
 			@authenticationError(@id)
 		success: (data, textStatus, jqXHR) =>
@@ -31,32 +32,43 @@ class window.Connector
 	
 	submitAngle: (angle) ->
 		@resp = null
-		$.post LOCATION,
+		$.ajax LOCATION,
+		data:
 			request: 'angle'
-			round: @game.ROUND
-			stage: @game.STAGE
-			id: @game.ID
+			round: @game.getRound()
+			stage: @game.getStage()
+			id: @game.getId()
 			angle: angle
-			success: (data, textStatus, jqXHR) => 
-				@resp = data
-				console.log "feedback: " + data
-				return
+		error: (jqXHR, textStatus, errorThrown) =>
+			@authenticationError(@id)
+		success: (data, textStatus, jqXHR) => 
+			@resp = data
+			console.log "feedback: " + data
+			return
 		console.log "submitted: " + angle + "\t response: " + @resp
 		return(@resp)
 		
 	
 	requestMean: () ->
 		@mean = -1
-		$.post LOCATION,
+		$.ajax LOCATION,
+		data:
 			request: 'mean'
-			round: @game.ROUND
-			stage: @game.STAGE
-			id: @game.ID
-			success: (data, textStatus, jqXHR) =>
-				@mean = data
-				console.log "mean angle: " + @mean
+			round: @game.getRound()
+			stage: @game.getStage()
+			id: @game.getId()
+		error: (jqXHR, textStatus, errorThrown) =>
+			@authenticationError(@id)
+		success: (data, textStatus, jqXHR) =>
+			@mean = data
+			console.log "mean angle: " + @mean
 		
 		return(@mean)
+	
+	
+	request: (type, data, success) ->
+		
+	
 	
 	authenticationError: (code) ->
 		console.log "Can't authenticate; error code: " + code		

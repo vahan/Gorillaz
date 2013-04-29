@@ -17,9 +17,11 @@
         type: "POST",
         dataType: 'html',
         async: false,
-        request: 'authenticate',
-        round: this.game.getRound(),
-        stage: this.game.getStage(),
+        data: {
+          request: 'authenticate',
+          round: this.game.getRound(),
+          stage: this.game.getStage()
+        },
         error: function(jqXHR, textStatus, errorThrown) {
           return _this.authenticationError(_this.id);
         },
@@ -39,12 +41,17 @@
     Connector.prototype.submitAngle = function(angle) {
       var _this = this;
       this.resp = null;
-      $.post(LOCATION, {
-        request: 'angle',
-        round: this.game.ROUND,
-        stage: this.game.STAGE,
-        id: this.game.ID,
-        angle: angle,
+      $.ajax(LOCATION, {
+        data: {
+          request: 'angle',
+          round: this.game.getRound(),
+          stage: this.game.getStage(),
+          id: this.game.getId(),
+          angle: angle
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          return _this.authenticationError(_this.id);
+        },
         success: function(data, textStatus, jqXHR) {
           _this.resp = data;
           console.log("feedback: " + data);
@@ -57,11 +64,16 @@
     Connector.prototype.requestMean = function() {
       var _this = this;
       this.mean = -1;
-      $.post(LOCATION, {
-        request: 'mean',
-        round: this.game.ROUND,
-        stage: this.game.STAGE,
-        id: this.game.ID,
+      $.ajax(LOCATION, {
+        data: {
+          request: 'mean',
+          round: this.game.getRound(),
+          stage: this.game.getStage(),
+          id: this.game.getId()
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          return _this.authenticationError(_this.id);
+        },
         success: function(data, textStatus, jqXHR) {
           _this.mean = data;
           return console.log("mean angle: " + _this.mean);
@@ -69,6 +81,8 @@
       });
       return this.mean;
     };
+
+    Connector.prototype.request = function(type, data, success) {};
 
     Connector.prototype.authenticationError = function(code) {
       return console.log("Can't authenticate; error code: " + code);

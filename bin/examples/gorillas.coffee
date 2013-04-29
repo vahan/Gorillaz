@@ -39,7 +39,7 @@ class window.GorillasGame
      
     background.src = "/sounds/background-music"+audioExtension
     background.loop = true
-    background.autoplay = true       
+    background.autoplay = true
     
     console.log "Round " + ROUND
     
