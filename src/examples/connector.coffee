@@ -3,11 +3,11 @@ LOCATION = 'http://localhost:8070/'
 class window.Connector
 	
 	constructor: (@game) ->
-		@id = -1
 		console.log "connector is ready"
-		
 	
-	submitAuthentication: () ->				
+	
+	submitAuthentication: () ->
+		console.log "authentication submitted"
 		$.ajax LOCATION,
 		type: "POST"
 		dataType: 'html'
@@ -17,22 +17,25 @@ class window.Connector
 			round: @game.getRound()
 			stage: @game.getStage()
 		error: (jqXHR, textStatus, errorThrown) =>
-			@authenticationError(@id)
+			@error(errorThrown)
 		success: (data, textStatus, jqXHR) =>
 			console.log "feedback: " + data
 			if data >= 0
-				@id = data
+				@game.setId(data)
 			else
-				@authenticationError(@id)	
+				@error("illegal id was returned while trying to authenticate: " + data)
 			
-		
-		console.log "Authenticated as: " + @id
-		return(@id)
+		console.log "Authenticated as: " + @game.getId()
+		return(@game.getId())
 	
 	
 	submitAngle: (angle) ->
+		console.log "submitting angle for game id: " + @game.getId()
 		@resp = null
 		$.ajax LOCATION,
+		type: "POST"
+		dataType: 'html'
+		async: false
 		data:
 			request: 'angle'
 			round: @game.getRound()
@@ -40,35 +43,77 @@ class window.Connector
 			id: @game.getId()
 			angle: angle
 		error: (jqXHR, textStatus, errorThrown) =>
-			@authenticationError(@id)
+			@error(errorThrown)
 		success: (data, textStatus, jqXHR) => 
 			@resp = data
-			console.log "feedback: " + data
 			return
 		console.log "submitted: " + angle + "\t response: " + @resp
 		return(@resp)
-		
 	
 	requestMean: () ->
+		console.log "requesting mean for game id: " + @game.getId()
 		@mean = -1
 		$.ajax LOCATION,
+		type: "POST"
+		dataType: 'html'
+		async: false
 		data:
 			request: 'mean'
+			round: @game.getPreviousRound()
+			stage: @game.getPreviousStage()
+			id: @game.getId()
+		error: (jqXHR, textStatus, errorThrown) =>
+			@error(errorThrown)
+		success: (data, textStatus, jqXHR) =>
+			@mean = data
+			console.log "mean angle: " + @mean
+		return(@mean)
+	
+	
+	requestNext: () ->
+		console.log "Requesting for next"
+		next = 0
+		$.ajax LOCATION,
+		type: "POST"
+		dataType: 'html'
+		async: false
+		data:
+			request: 'next'
 			round: @game.getRound()
 			stage: @game.getStage()
 			id: @game.getId()
 		error: (jqXHR, textStatus, errorThrown) =>
-			@authenticationError(@id)
+			alert "Failure"
+			@error(errorThrown)
 		success: (data, textStatus, jqXHR) =>
-			@mean = data
-			console.log "mean angle: " + @mean
+			next = data
+			console.log "to next: " + next
+		return next
+	
+	
+	
+	
+	submit: (request, specData, success, result) =>
+		data=
+			request: request
+			round: @game.getRound()
+			stage: @game.getStage()
+		$.merge data, specData
 		
-		return(@mean)
+		$.ajax LOCATION,
+		type: "POST"
+		dataType: 'html'
+		async: false
+		data: data
+		error: (jqXHR, textStatus, errorThrown) =>
+			@error(errorThrown)
+		success: success
+		return(result)
 	
 	
-	request: (type, data, success) ->
-		
+	
+	error: (code) ->
+		console.log "Ajax error. Error code: " + code		
 	
 	
-	authenticationError: (code) ->
-		console.log "Can't authenticate; error code: " + code		
+
