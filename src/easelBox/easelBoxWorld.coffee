@@ -35,8 +35,8 @@ class window.EaselBoxWorld
 		@infoBar = @addInfoBar()
 		@playerAngle = new Text("your angle: ", "14px Arial", "black")
 		@infoBar.addChild @playerAngle
-		if @callingObj.getRound() > 1
-			@addResponseInfo()
+		#if @callingObj.getRound() > 1
+		#	@addResponseInfo()
 		# array of entities to update later
 		@objects = []
 		
@@ -56,11 +56,11 @@ class window.EaselBoxWorld
 		
 		if (@callingObj.getRound() > 1)
 			@meanAngle = @connector.requestMean()
-			alert "mean angle: " + @meanAngle
 			if (@meanAngle != "NO")
 				@addResponseArrow(170, @meanAngle)
+				@addResponseInfo()
 			else
-				alert "grumpy cat"
+				alert "mean angle request returned NO"
 		@submitted = false
 	
 	addLandscape: (options) ->
@@ -311,10 +311,9 @@ class window.EaselBoxWorld
 		@responseInfo = new Text("mean angle: ", "14px Arial", "black")
 		@responseInfo.x = 0
 		@responseInfo.y = 50
-		
-		@responseInfo.text += @meanAngle
-		
+		@responseInfo.text += Math.round(@meanAngle)
 		@infoBar.addChild @responseInfo
+	
 	
 	getRound: () ->
 		@callingObj.getRound()

@@ -107,7 +107,7 @@
           id: this.game.getId()
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          alert("Failure");
+          alert("Failure when trying to request for next");
           return _this.error(errorThrown);
         },
         success: function(data, textStatus, jqXHR) {
@@ -390,16 +390,14 @@
     };
 
     GorillasGame.prototype.next = function() {
-      var next, splitted,
-        _this = this;
+      var next, splitted;
+      console.log("nexting");
       if (this.nextButton.visible === true) {
         return;
       }
       next = 0;
       while (next === 0) {
-        (function() {
-          return next = _this.connector.requestNext();
-        })();
+        next = this.connector.requestNext();
       }
       if (this.world.message != null) {
         this.world.message.visible = false;

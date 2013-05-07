@@ -253,12 +253,13 @@ class window.GorillasGame
 			return @getStage() - 1
 	
 	next: () ->
+		console.log "nexting"
 		if @nextButton.visible == true
 			return
 		next = 0
 		while next == 0
-			do () =>
-				next = @connector.requestNext()
+			next = @connector.requestNext()
+
 		if @world.message?
 			@world.message.visible = false
 		@nextButton.visible = true

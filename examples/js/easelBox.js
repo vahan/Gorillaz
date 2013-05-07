@@ -382,9 +382,6 @@
       this.infoBar = this.addInfoBar();
       this.playerAngle = new Text("your angle: ", "14px Arial", "black");
       this.infoBar.addChild(this.playerAngle);
-      if (this.callingObj.getRound() > 1) {
-        this.addResponseInfo();
-      }
       this.objects = [];
       debugDraw = new Box2D.Dynamics.b2DebugDraw();
       debugDraw.SetSprite(debugCanvas.getContext("2d"));
@@ -399,11 +396,11 @@
       this.responseArrowsDrawn = false;
       if (this.callingObj.getRound() > 1) {
         this.meanAngle = this.connector.requestMean();
-        alert("mean angle: " + this.meanAngle);
         if (this.meanAngle !== "NO") {
           this.addResponseArrow(170, this.meanAngle);
+          this.addResponseInfo();
         } else {
-          alert("grumpy cat");
+          alert("mean angle request returned NO");
         }
       }
       this.submitted = false;
@@ -682,7 +679,7 @@
       this.responseInfo = new Text("mean angle: ", "14px Arial", "black");
       this.responseInfo.x = 0;
       this.responseInfo.y = 50;
-      this.responseInfo.text += this.meanAngle;
+      this.responseInfo.text += Math.round(this.meanAngle);
       return this.infoBar.addChild(this.responseInfo);
     };
 
