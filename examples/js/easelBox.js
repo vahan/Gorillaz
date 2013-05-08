@@ -374,9 +374,8 @@
       this.banana = null;
       this.angle = null;
       this.connector = this.callingObj.connector;
-      if (this.callingObj.getRound() <= 0) {
+      if (this.callingObj.getRound() <= 0 && this.callingObj.getStage() === 1) {
         this.callingObj.setId(this.connector.submitAuthentication());
-        console.log("ID: " + this.callingObj.getId());
       }
       this.easelStage = new Stage(canvas);
       this.infoBar = this.addInfoBar();
@@ -394,17 +393,20 @@
       this.arrowDrawn = false;
       this.responseArrows = [];
       this.responseArrowsDrawn = false;
+      this.submitted = false;
+    }
+
+    EaselBoxWorld.prototype.addMeanInfo = function() {
       if (this.callingObj.getRound() > 1) {
         this.meanAngle = this.connector.requestMean();
         if (this.meanAngle !== "NO") {
           this.addResponseArrow(170, this.meanAngle);
-          this.addResponseInfo();
+          return this.addResponseInfo();
         } else {
-          alert("mean angle request returned NO");
+          return alert("mean angle request returned NO");
         }
       }
-      this.submitted = false;
-    }
+    };
 
     EaselBoxWorld.prototype.addLandscape = function(options) {
       var bound, firstElement, i, iter, iterations, left_idx, max, max_width, max_y, max_y_idx, midpoint_index, midpoint_x, midpoint_y, min, min_width, queue, r, right_idx, ticks, tinyRectangle, x0, x1, x2, y0, y1, y2, _i, _ref, _results,
@@ -609,18 +611,26 @@
     };
 
     EaselBoxWorld.prototype.addResponseArrow = function(x, angle) {
-      var arr;
-      arr = new Bitmap("/img/ARROW/arrow.jpg");
-      arr.x = x;
-      arr.y = 20;
-      arr.scaleX = 0.15;
-      arr.scaleY = 0.1;
-      arr.regX = arr.image.width / 2;
-      arr.regY = arr.image.height / 2;
-      arr.rotation = -angle;
-      arr.visible = true;
-      this.infoBar.addChild(arr);
-      return arr;
+      var arr, i, _i, _len, _ref, _results;
+      if (this.responseArrows.length === 0) {
+        arr = new Bitmap("/img/ARROW/arrow.jpg");
+        arr.x = x;
+        arr.y = 30;
+        arr.scaleX = 0.15;
+        arr.scaleY = 0.1;
+        arr.regX = arr.image.width / 2;
+        arr.regY = arr.image.height / 2;
+        arr.visible = true;
+        this.infoBar.addChild(arr);
+        this.responseArrows.push(arr);
+      }
+      _ref = this.responseArrows;
+      _results = [];
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        arr = _ref[i];
+        _results.push(this.infoBar.getChildAt(this.infoBar.getChildIndex(this.responseArrows[i])).rotation = -angle);
+      }
+      return _results;
     };
 
     EaselBoxWorld.prototype.addEntity = function(options) {
@@ -643,12 +653,17 @@
     };
 
     EaselBoxWorld.prototype.removeEntity = function(object) {
+      if (object == null) {
+        return false;
+      }
+      if (object.body != null) {
+        this.box2dWorld.DestroyBody(object.body);
+      }
+      return this.easelStage.removeChild(object.easelObj);
+    };
+
+    EaselBoxWorld.prototype.addImage = function(imgSrc, options) {
       var obj, property, value;
-      this.box2dWorld.DestroyBody(object.body);
-      this.easelStage.removeChild(object.easelObj);
-      ({
-        addImage: function(imgSrc, options) {}
-      });
       obj = new Bitmap(imgSrc);
       for (property in options) {
         value = options[property];
@@ -662,8 +677,7 @@
       infoBar = new Container();
       infoBar.x = 50;
       infoBar.y = 50;
-      this.easelStage.addChild(infoBar);
-      return infoBar;
+      return this.easelStage.addChild(infoBar);
     };
 
     EaselBoxWorld.prototype.updateInfoBar = function(angle) {
@@ -676,11 +690,13 @@
     };
 
     EaselBoxWorld.prototype.addResponseInfo = function() {
-      this.responseInfo = new Text("mean angle: ", "14px Arial", "black");
-      this.responseInfo.x = 0;
-      this.responseInfo.y = 50;
-      this.responseInfo.text += Math.round(this.meanAngle);
-      return this.infoBar.addChild(this.responseInfo);
+      if (!this.infoBar.contains(this.responseInfo)) {
+        this.responseInfo = new Text("", "14px Arial", "black");
+        this.responseInfo.x = 0;
+        this.responseInfo.y = 50;
+        this.infoBar.addChild(this.responseInfo);
+      }
+      return this.responseInfo.text = "mean angle: " + Math.round(this.meanAngle);
     };
 
     EaselBoxWorld.prototype.getRound = function() {
@@ -707,13 +723,20 @@
     };
 
     EaselBoxWorld.prototype.submit = function() {
-      this.connector.submitAngle(this.angle * 180 / Math.PI);
-      this.waitForOthers();
-      return this.submitted = true;
+      if (this.connector.submitAngle(this.angle * 180 / Math.PI) !== null) {
+        this.submitted = true;
+        return this.waitForOthers();
+      }
     };
 
     EaselBoxWorld.prototype.isSubmitted = function() {
       return this.submitted;
+    };
+
+    EaselBoxWorld.prototype.reset = function() {
+      this.submitted = false;
+      this.removeEntity(this.message);
+      return this.easelStage.update();
     };
 
     EaselBoxWorld.prototype.tick = function() {
@@ -733,7 +756,6 @@
       if (!this.responseArrowsDrawn) {
         _ref1 = this.responseArrows;
         _fn = function(arr) {
-          alert("bbb");
           if (arr.image.width > 0 && arr.image.height > 0) {
             arr.regX = arr.image.width / 2;
             arr.regY = arr.image.height / 2;
@@ -853,6 +875,7 @@
 
     function EaselBoxBanana(options) {
       var box2dShape, density, friction, restitution;
+      console.log("banana created");
       this.easelObj = new Bitmap(options.imgSrc);
       this.easelObj.globalRegX = options.xPixels;
       this.easelObj.globalRegY = options.yPixels;
@@ -881,7 +904,8 @@
 
     EaselBoxBanana.prototype.explode = function() {
       if (!this.exploded) {
-        return this.exploded = true;
+        this.exploded = true;
+        return console.log("boom");
       }
     };
 

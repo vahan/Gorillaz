@@ -25,9 +25,8 @@ class window.EaselBoxWorld
 		@angle = null
 		
 		@connector = @callingObj.connector
-		if @callingObj.getRound() <= 0
+		if @callingObj.getRound() <= 0 and @callingObj.getStage() == 1
 			@callingObj.setId(@connector.submitAuthentication())
-			console.log "ID: " + @callingObj.getId()
 		
 		# set up EaselJS
 		@easelStage = new Stage(canvas)
@@ -54,6 +53,9 @@ class window.EaselBoxWorld
 		@responseArrows = []
 		@responseArrowsDrawn = false
 		
+		@submitted = false
+	
+	addMeanInfo: () ->
 		if (@callingObj.getRound() > 1)
 			@meanAngle = @connector.requestMean()
 			if (@meanAngle != "NO")
@@ -61,7 +63,6 @@ class window.EaselBoxWorld
 				@addResponseInfo()
 			else
 				alert "mean angle request returned NO"
-		@submitted = false
 	
 	addLandscape: (options) ->
 		#how much flat land should we dedicate to each gorilla?   
@@ -252,18 +253,20 @@ class window.EaselBoxWorld
 		return @arrow
 	
 	addResponseArrow: (x, angle) ->
-		arr = new Bitmap("/img/ARROW/arrow.jpg")
-		arr.x = x
-		arr.y = 20
-		arr.scaleX = 0.15
-		arr.scaleY = 0.1
-		arr.regX = arr.image.width / 2
-		arr.regY = arr.image.height / 2
-		arr.rotation = -angle
-		arr.visible = true
-		@infoBar.addChild arr
-		#@responseArrows.push(arr)
-		return arr
+		if @responseArrows.length == 0
+			arr = new Bitmap("/img/ARROW/arrow.jpg")
+			arr.x = x
+			arr.y = 30
+			arr.scaleX = 0.15
+			arr.scaleY = 0.1
+			arr.regX = arr.image.width / 2
+			arr.regY = arr.image.height / 2
+			arr.visible = true
+			@infoBar.addChild arr
+			@responseArrows.push(arr)
+		for arr, i in @responseArrows
+			@infoBar.getChildAt(@infoBar.getChildIndex(@responseArrows[i])).rotation = -angle
+			
 	
 	addEntity: (options) -> 
 		object = null
@@ -284,9 +287,13 @@ class window.EaselBoxWorld
 		return object
 		
 	removeEntity: (object) ->
-		@box2dWorld.DestroyBody(object.body)
+		if !object?
+			return false
+		if object.body?
+			@box2dWorld.DestroyBody(object.body)
 		@easelStage.removeChild(object.easelObj)
-		addImage: (imgSrc, options) ->
+	
+	addImage: (imgSrc, options) ->
 		obj = new Bitmap(imgSrc)
 		for property, value of options
 			obj[property] = value
@@ -298,7 +305,7 @@ class window.EaselBoxWorld
 		infoBar.x = 50
 		infoBar.y = 50
 		@easelStage.addChild infoBar
-		return infoBar
+
 	
 	updateInfoBar: (angle) ->
 		angleDegree = Math.round(angle * 180 / Math.PI)
@@ -306,13 +313,13 @@ class window.EaselBoxWorld
 			@arrow.rotation = angleDegree
 			@playerAngle.text = "your angle: " + angleDegree * -1
 	
-	
 	addResponseInfo: () ->
-		@responseInfo = new Text("mean angle: ", "14px Arial", "black")
-		@responseInfo.x = 0
-		@responseInfo.y = 50
-		@responseInfo.text += Math.round(@meanAngle)
-		@infoBar.addChild @responseInfo
+		if !@infoBar.contains(@responseInfo)
+			@responseInfo = new Text("", "14px Arial", "black")
+			@responseInfo.x = 0
+			@responseInfo.y = 50
+			@infoBar.addChild @responseInfo
+		@responseInfo.text = "mean angle: "  + Math.round(@meanAngle)
 	
 	
 	getRound: () ->
@@ -332,15 +339,20 @@ class window.EaselBoxWorld
 		@message.x = 450
 		@message.y = 150
 		@easelStage.addChild @message
-		
+	
 	submit: () ->
-		@connector.submitAngle(@angle * 180 / Math.PI)
-		@waitForOthers()
-		@submitted = true
+		if @connector.submitAngle(@angle * 180 / Math.PI) != null
+			@submitted = true
+			@waitForOthers()
 		
 	isSubmitted: () ->
 		return(@submitted)
-	
+		
+	reset: () ->
+		@submitted = false
+		@removeEntity @message
+		@easelStage.update()
+		
 	
 	tick: ->
 		if Ticker.getMeasuredFPS() > minFPS
@@ -349,7 +361,6 @@ class window.EaselBoxWorld
 			for object in @objects
 				object.update()
 		
-		
 		# check to see if main object has a callback for each tick
 		if typeof @callingObj.tick == 'function'
 			@callingObj.tick()
@@ -357,7 +368,6 @@ class window.EaselBoxWorld
 		if !@responseArrowsDrawn
 			for arr in @responseArrows
 				do (arr) ->
-					alert "bbb"
 					if arr.image.width > 0 and arr.image.height > 0
 						arr.regX = arr.image.width / 2
 						arr.regY = arr.image.height / 2

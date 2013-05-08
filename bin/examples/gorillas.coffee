@@ -46,10 +46,10 @@ class window.GorillasGame
 		
 		console.log "Round " + ROUND
 		
-		game = new GorillasGame(canvas, debugCanvas, statsCanvas, -1, false)
+		game = new GorillasGame(canvas, debugCanvas, statsCanvas, -1)
 	
 	
-	constructor: (canvas, debugCanvas, statsCanvas, id, clicked) ->
+	constructor: (canvas, debugCanvas, statsCanvas, id) ->
 		console.log "Creating new game"
 		@id = id
 		@connector = new Connector(this)
@@ -65,6 +65,74 @@ class window.GorillasGame
 			type: 'static'
 		)
 		
+		@arrow = @world.addArrow()
+		
+		@draw()
+		
+		@monkey2 = @world.addMonkey(
+			SpriteSheet:  new SpriteSheet(
+				images: ["/img/BREATH/right_breath1-resized.png",
+									"/img/BREATH/right_breath2-resized.png",
+									"/img/BREATH/right_breath3-resized.png",
+									"/img/BREATH/right_breath4-resized.png"],
+				frames: {width:308,height:308}
+				animations: {standby:[0,3,"standby",5]}
+			),
+			scaleX: 0.5,
+			scaleY: 0.5,
+			#sizes (=half the side length of the respective square) in pixels. 
+			#Coordinates of the body parts are relative to the location of the torso
+			size_head: 15,
+			size_torso: 20,
+			size_lowerbody: 22,
+			density: 2,
+			friction: 0.8,
+			restitution: 0.3,
+			#location of the torso's center in pixels
+			xPixels: canvas.width-22-38, 
+			yPixels: @voffset-20-22*2,
+			regX:308/2,
+			regY:308/2+20,
+			#location of the easel object
+			easelx: 100,
+			easely: 100
+		)
+		
+		###@tower2 = @world.addTower(
+			imgSrc: "/img/TOWER/tower.png"
+			scaleX: 0.4,
+			scaleY: 0.3,    
+			#the position of the easeljs object
+			xPixels: canvas.width-22-38-100,
+			yPixels: @voffset-125
+		)###
+		
+		@nextButton = new Bitmap("/img/LANDSCAPE/Next.gif")
+		@nextButton.x = 500
+		@nextButton.y = 80
+		@nextButton.scaleX = 0.3
+		@nextButton.scaleY = 0.3
+		@nextButton.visible = false
+		@nextButton.onClick = (event) =>
+			console.log "Next clicked"
+			ROUND = NEXT_ROUND
+			STAGE = NEXT_STAGE
+			@draw()
+			@updateRound()
+			#game = new GorillasGame(canvas, debugCanvas, statsCanvas, @id, true)
+			return false #Needed to prevent double calling the event. And yes, it's ugly!
+		@world.easelStage.addChild @nextButton 
+		
+		@updateRound()
+	
+	
+	draw: () ->
+		console.log "button is visible: " + @nextButton.visible if @nextButton?	
+		@nextButton.visible = false if @nextButton?
+		console.log "button is visible: " + @nextButton.visible if @nextButton?
+		@world.reset()
+		
+		@world.removeEntity(@world.getBanana())
 		if ROUND <= 0
 			@world.addBanana(
 				imgSrc: "/img/BANANA/banana.png"
@@ -84,8 +152,9 @@ class window.GorillasGame
 				regX: 20,
 				regY: 20,
 			)
-		arrow = @world.addArrow()
+			
 		
+		@world.removeEntity(@monkey1)
 		@monkey1 = @world.addMonkey(
 			SpriteSheet:  new SpriteSheet(
 				images: ["/img/BREATH3/left/breath_left_1.png",
@@ -137,6 +206,7 @@ class window.GorillasGame
 		)
 		@monkey1.addActionListeners()
 		
+		@world.removeEntity(@tower1)
 		@tower1 = @world.addTower(
 			imgSrc: "/img/TOWER/tower.png"
 			scaleX: 0.4,
@@ -146,85 +216,8 @@ class window.GorillasGame
 			yPixels: @voffset-125
 		)
 		
+		@world.addMeanInfo()
 		
-		@monkey2 = @world.addMonkey(
-			SpriteSheet:  new SpriteSheet(
-				images: ["/img/BREATH/right_breath1-resized.png",
-									"/img/BREATH/right_breath2-resized.png",
-									"/img/BREATH/right_breath3-resized.png",
-									"/img/BREATH/right_breath4-resized.png"],
-				frames: {width:308,height:308}
-				animations: {standby:[0,3,"standby",5]}
-			),
-			scaleX: 0.5,
-			scaleY: 0.5,
-			#sizes (=half the side length of the respective square) in pixels. 
-			#Coordinates of the body parts are relative to the location of the torso
-			size_head: 15,
-			size_torso: 20,
-			size_lowerbody: 22,
-			density: 2,
-			friction: 0.8,
-			restitution: 0.3,
-			#location of the torso's center in pixels
-			xPixels: canvas.width-22-38, 
-			yPixels: @voffset-20-22*2,
-			regX:308/2,
-			regY:308/2+20,
-			#location of the easel object
-			easelx: 100,
-			easely: 100
-		)
-		
-		###@tower2 = @world.addTower(
-			imgSrc: "/img/TOWER/tower.png"
-			scaleX: 0.4,
-			scaleY: 0.3,    
-			#the position of the easeljs object
-			xPixels: canvas.width-22-38-100,
-			yPixels: @voffset-125
-		)###
-		 
-		###
-		@bazooka = @world.addBazooka(
-			imgSrc: "/img/BAZOOKA/Bazooka.png"
-			scaleX: 1,
-			scaleY: 1,
-			density: 2,
-			friction: 0.8,
-			restitution: 0.3,
-			#dimensions of the  Box2D rectangle in pixels 
-			width: 40,
-			height: 125,
-			#the position of the easeljs object
-			xPixels: 120, 
-			yPixels: 130,       
-			regX: 25.5,
-			regY: 128-1.92,
-			angleDegrees: 0
-		)
-		###
-		
-		@nextButton = new Bitmap("/img/LANDSCAPE/Next.gif")
-		@nextButton.x = 500
-		@nextButton.y = 80
-		@nextButton.scaleX = 0.3
-		@nextButton.scaleY = 0.3
-		@nextButton.visible = false
-		@clicked = clicked
-		@nextButton.onClick = (event) =>
-			if @clicked == true
-				return false
-			console.log "Next clicked"
-			ROUND = NEXT_ROUND
-			STAGE = NEXT_STAGE
-			game = new GorillasGame(canvas, debugCanvas, statsCanvas, @id, true)
-			clicked = true
-			return false #Needed to prevent double calling the event. And yes, it's ugly!
-		@world.easelStage.addChild @nextButton 
-		
-		@updateRound()
-	
 	
 	getId: () ->
 		@id
@@ -253,7 +246,6 @@ class window.GorillasGame
 			return @getStage() - 1
 	
 	next: () ->
-		console.log "nexting"
 		if @nextButton.visible == true
 			return
 		next = 0
@@ -279,10 +271,12 @@ class window.GorillasGame
 					(i.fixtureA == @monkey2.headbodyfixture and i.fixtureB == @world.banana.fixture)
 						console.log "headshot"
 		
-		if @world.getRound() == 0 and @world.getBanana() != null and @world.getBanana().isOver()
+		if @world.getRound() == 0 and @world.getBanana() != null and @world.getBanana().isOver() and !@world.isSubmitted()
+			@world.submit()
 			@next()
 		
-		if @world.isSubmitted()
+		if @world.getRound() > 0 and @world.isSubmitted()
+			console.log "world is submitted"
 			@next()
 		
 		#console.log "tick2"

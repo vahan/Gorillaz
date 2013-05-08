@@ -204,12 +204,11 @@
       background.loop = true;
       background.autoplay = true;
       console.log("Round " + ROUND);
-      return game = new GorillasGame(canvas, debugCanvas, statsCanvas, -1, false);
+      return game = new GorillasGame(canvas, debugCanvas, statsCanvas, -1);
     });
 
-    function GorillasGame(canvas, debugCanvas, statsCanvas, id, clicked) {
-      var arrow,
-        _this = this;
+    function GorillasGame(canvas, debugCanvas, statsCanvas, id) {
+      var _this = this;
       console.log("Creating new game");
       this.id = id;
       this.connector = new Connector(this);
@@ -223,59 +222,8 @@
         vertical_offset: this.voffset,
         type: 'static'
       });
-      if (ROUND <= 0) {
-        this.world.addBanana({
-          imgSrc: "/img/BANANA/banana.png",
-          scaleX: 1,
-          scaleY: 1,
-          density: 1,
-          friction: 0,
-          restitution: 0,
-          width: 40,
-          height: 20,
-          xPixels: (625 - 110) * 0.3 + 75,
-          yPixels: (this.voffset - 5) - (550 - 240) * 0.3,
-          regX: 20,
-          regY: 20
-        });
-      }
-      arrow = this.world.addArrow();
-      this.monkey1 = this.world.addMonkey({
-        SpriteSheet: new SpriteSheet({
-          images: ["/img/BREATH3/left/breath_left_1.png", "/img/BREATH3/left/breath_left_2.png", "/img/BREATH3/left/breath_left_2_copy.png", "/img/BREATH3/left/breath_left_3.png", "/img/BREATH3/left/breath_left_3_copy.png", "/img/BREATH3/left/breath_left_4.png", "/img/BREATH3/left/breath_left_4_copy.png", "/img/BREATH3/left/breath_left_5.png", "/img/BREATH3/left/approach-left-1.png", "/img/BREATH3/left/approach-left-1_copy.png", "/img/BREATH3/left/approach-left-2.png", "/img/BREATH3/left/approach-left-2_copy.png", "/img/BREATH3/left/approach-left-3.png", "/img/BREATH3/left/approach-left-3_copy.png", "/img/BREATH3/left/approach-left-4.png", "/img/BREATH3/left/approach-left-4_copy.png", "/img/BREATH3/left/approach-left-5.png", "/img/BREATH3/left/approach-left-5_copy.png", "/img/BREATH3/left/approach-left-6.png", "/img/BREATH3/left/shoot_left_1.png", "/img/BREATH3/left/shoot_left_2.png"],
-          frames: {
-            width: 220,
-            height: 165,
-            count: 21
-          },
-          animations: {
-            standby: [0, 7, "standby", 2],
-            approachbazooka: [7, 18, false, 1],
-            shoot: [18, 20, false, 1]
-          }
-        }),
-        scaleX: 1,
-        scaleY: 1,
-        size_head: 20,
-        size_torso: 25,
-        size_lowerbody: 32,
-        density: 2,
-        friction: 0.8,
-        restitution: 0.3,
-        xPixels: 75,
-        yPixels: this.voffset - 75,
-        regX: 33,
-        regY: 165 - 15,
-        voffset: this.voffset
-      });
-      this.monkey1.addActionListeners();
-      this.tower1 = this.world.addTower({
-        imgSrc: "/img/TOWER/tower.png",
-        scaleX: 0.4,
-        scaleY: 0.3,
-        xPixels: 25,
-        yPixels: this.voffset - 125
-      });
+      this.arrow = this.world.addArrow();
+      this.draw();
       this.monkey2 = this.world.addMonkey({
         SpriteSheet: new SpriteSheet({
           images: ["/img/BREATH/right_breath1-resized.png", "/img/BREATH/right_breath2-resized.png", "/img/BREATH/right_breath3-resized.png", "/img/BREATH/right_breath4-resized.png"],
@@ -312,48 +260,92 @@
       		)
       */
 
-      /*
-      		@bazooka = @world.addBazooka(
-      			imgSrc: "/img/BAZOOKA/Bazooka.png"
-      			scaleX: 1,
-      			scaleY: 1,
-      			density: 2,
-      			friction: 0.8,
-      			restitution: 0.3,
-      			#dimensions of the  Box2D rectangle in pixels 
-      			width: 40,
-      			height: 125,
-      			#the position of the easeljs object
-      			xPixels: 120, 
-      			yPixels: 130,       
-      			regX: 25.5,
-      			regY: 128-1.92,
-      			angleDegrees: 0
-      		)
-      */
-
       this.nextButton = new Bitmap("/img/LANDSCAPE/Next.gif");
       this.nextButton.x = 500;
       this.nextButton.y = 80;
       this.nextButton.scaleX = 0.3;
       this.nextButton.scaleY = 0.3;
       this.nextButton.visible = false;
-      this.clicked = clicked;
       this.nextButton.onClick = function(event) {
-        var game;
-        if (_this.clicked === true) {
-          return false;
-        }
         console.log("Next clicked");
         ROUND = NEXT_ROUND;
         STAGE = NEXT_STAGE;
-        game = new GorillasGame(canvas, debugCanvas, statsCanvas, _this.id, true);
-        clicked = true;
+        _this.draw();
+        _this.updateRound();
         return false;
       };
       this.world.easelStage.addChild(this.nextButton);
       this.updateRound();
     }
+
+    GorillasGame.prototype.draw = function() {
+      if (this.nextButton != null) {
+        console.log("button is visible: " + this.nextButton.visible);
+      }
+      if (this.nextButton != null) {
+        this.nextButton.visible = false;
+      }
+      if (this.nextButton != null) {
+        console.log("button is visible: " + this.nextButton.visible);
+      }
+      this.world.reset();
+      this.world.removeEntity(this.world.getBanana());
+      if (ROUND <= 0) {
+        this.world.addBanana({
+          imgSrc: "/img/BANANA/banana.png",
+          scaleX: 1,
+          scaleY: 1,
+          density: 1,
+          friction: 0,
+          restitution: 0,
+          width: 40,
+          height: 20,
+          xPixels: (625 - 110) * 0.3 + 75,
+          yPixels: (this.voffset - 5) - (550 - 240) * 0.3,
+          regX: 20,
+          regY: 20
+        });
+      }
+      this.world.removeEntity(this.monkey1);
+      this.monkey1 = this.world.addMonkey({
+        SpriteSheet: new SpriteSheet({
+          images: ["/img/BREATH3/left/breath_left_1.png", "/img/BREATH3/left/breath_left_2.png", "/img/BREATH3/left/breath_left_2_copy.png", "/img/BREATH3/left/breath_left_3.png", "/img/BREATH3/left/breath_left_3_copy.png", "/img/BREATH3/left/breath_left_4.png", "/img/BREATH3/left/breath_left_4_copy.png", "/img/BREATH3/left/breath_left_5.png", "/img/BREATH3/left/approach-left-1.png", "/img/BREATH3/left/approach-left-1_copy.png", "/img/BREATH3/left/approach-left-2.png", "/img/BREATH3/left/approach-left-2_copy.png", "/img/BREATH3/left/approach-left-3.png", "/img/BREATH3/left/approach-left-3_copy.png", "/img/BREATH3/left/approach-left-4.png", "/img/BREATH3/left/approach-left-4_copy.png", "/img/BREATH3/left/approach-left-5.png", "/img/BREATH3/left/approach-left-5_copy.png", "/img/BREATH3/left/approach-left-6.png", "/img/BREATH3/left/shoot_left_1.png", "/img/BREATH3/left/shoot_left_2.png"],
+          frames: {
+            width: 220,
+            height: 165,
+            count: 21
+          },
+          animations: {
+            standby: [0, 7, "standby", 2],
+            approachbazooka: [7, 18, false, 1],
+            shoot: [18, 20, false, 1]
+          }
+        }),
+        scaleX: 1,
+        scaleY: 1,
+        size_head: 20,
+        size_torso: 25,
+        size_lowerbody: 32,
+        density: 2,
+        friction: 0.8,
+        restitution: 0.3,
+        xPixels: 75,
+        yPixels: this.voffset - 75,
+        regX: 33,
+        regY: 165 - 15,
+        voffset: this.voffset
+      });
+      this.monkey1.addActionListeners();
+      this.world.removeEntity(this.tower1);
+      this.tower1 = this.world.addTower({
+        imgSrc: "/img/TOWER/tower.png",
+        scaleX: 0.4,
+        scaleY: 0.3,
+        xPixels: 25,
+        yPixels: this.voffset - 125
+      });
+      return this.world.addMeanInfo();
+    };
 
     GorillasGame.prototype.getId = function() {
       return this.id;
@@ -391,7 +383,6 @@
 
     GorillasGame.prototype.next = function() {
       var next, splitted;
-      console.log("nexting");
       if (this.nextButton.visible === true) {
         return;
       }
@@ -423,10 +414,12 @@
           console.log("headshot");
         }
       }
-      if (this.world.getRound() === 0 && this.world.getBanana() !== null && this.world.getBanana().isOver()) {
+      if (this.world.getRound() === 0 && this.world.getBanana() !== null && this.world.getBanana().isOver() && !this.world.isSubmitted()) {
+        this.world.submit();
         this.next();
       }
-      if (this.world.isSubmitted()) {
+      if (this.world.getRound() > 0 && this.world.isSubmitted()) {
+        console.log("world is submitted");
         return this.next();
       }
     };
