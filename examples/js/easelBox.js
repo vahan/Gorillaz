@@ -620,6 +620,7 @@
         arr.scaleY = 0.1;
         arr.regX = arr.image.width / 2;
         arr.regY = arr.image.height / 2;
+        arr.rotation = -angle;
         arr.visible = true;
         this.infoBar.addChild(arr);
         this.responseArrows.push(arr);

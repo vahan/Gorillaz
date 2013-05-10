@@ -91,8 +91,6 @@ class window.Connector
 		return next
 	
 	
-	
-	
 	submit: (request, specData, success, result) =>
 		data=
 			request: request

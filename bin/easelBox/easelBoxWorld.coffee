@@ -261,12 +261,13 @@ class window.EaselBoxWorld
 			arr.scaleY = 0.1
 			arr.regX = arr.image.width / 2
 			arr.regY = arr.image.height / 2
+			arr.rotation = -angle
 			arr.visible = true
 			@infoBar.addChild arr
 			@responseArrows.push(arr)
 		for arr, i in @responseArrows
 			@infoBar.getChildAt(@infoBar.getChildIndex(@responseArrows[i])).rotation = -angle
-			
+		
 	
 	addEntity: (options) -> 
 		object = null

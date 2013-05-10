@@ -4,6 +4,7 @@ MAX_ROUNDS = 5
 MAX_STAGES = 8
 NEXT_ROUND = 0
 NEXT_STAGE = 1
+UPDATE_INTERVAL = 50
 
 class window.GorillasGame
 	# to set up Easel-Box2d world
@@ -50,6 +51,7 @@ class window.GorillasGame
 	
 	
 	constructor: (canvas, debugCanvas, statsCanvas, id) ->
+		@time = 0
 		console.log "Creating new game"
 		@id = id
 		@connector = new Connector(this)
@@ -248,9 +250,9 @@ class window.GorillasGame
 	next: () ->
 		if @nextButton.visible == true
 			return
-		next = 0
-		while next == 0
-			next = @connector.requestNext()
+		next = "NO"
+		while next == "NO"
+			next = @connector.requestNext().trim() #Don't forget the fucking trim!!!!
 
 		if @world.message?
 			@world.message.visible = false
@@ -271,13 +273,17 @@ class window.GorillasGame
 					(i.fixtureA == @monkey2.headbodyfixture and i.fixtureB == @world.banana.fixture)
 						console.log "headshot"
 		
-		if @world.getRound() == 0 and @world.getBanana() != null and @world.getBanana().isOver() and !@world.isSubmitted()
-			@world.submit()
-			@next()
+		@time++
 		
-		if @world.getRound() > 0 and @world.isSubmitted()
-			console.log "world is submitted"
-			@next()
+		if @time > UPDATE_INTERVAL
+			console.log "ask for next"
+			@time = 0
+			if @world.getRound() == 0 and @world.getBanana() != null and @world.getBanana().isOver() and !@world.isSubmitted()
+				@world.submit()
+				@next()
+			else if @world.getRound() > 0 and @world.isSubmitted()
+				console.log "world is submitted"
+				@next()
 		
 		#console.log "tick2"
 		#@monkey1.ApplyForce(@world.box2dWorld.GetGravity());  
