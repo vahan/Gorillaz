@@ -242,7 +242,7 @@ class window.GorillasGame
 			return @getRound() - 1
 	
 	getPreviousStage: () ->
-		if @getStage() == 1
+		if @getStage() == 0
 			return @getStage()
 		else
 			return @getStage() - 1

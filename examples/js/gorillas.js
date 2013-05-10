@@ -377,7 +377,7 @@
     };
 
     GorillasGame.prototype.getPreviousStage = function() {
-      if (this.getStage() === 1) {
+      if (this.getStage() === 0) {
         return this.getStage();
       } else {
         return this.getStage() - 1;
