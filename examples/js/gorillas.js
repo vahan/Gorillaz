@@ -150,7 +150,7 @@
 
   ROUND = 0;
 
-  STAGE = 1;
+  STAGE = 0;
 
   MAX_ROUNDS = 5;
 
@@ -158,7 +158,7 @@
 
   NEXT_ROUND = 0;
 
-  NEXT_STAGE = 1;
+  NEXT_STAGE = 0;
 
   UPDATE_INTERVAL = 50;
 
@@ -377,10 +377,10 @@
     };
 
     GorillasGame.prototype.getPreviousStage = function() {
-      if (this.getStage() === 0) {
-        return this.getStage();
-      } else {
+      if (this.getStage() > 0) {
         return this.getStage() - 1;
+      } else {
+        return this.getStage();
       }
     };
 

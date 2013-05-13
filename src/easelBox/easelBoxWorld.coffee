@@ -25,7 +25,7 @@ class window.EaselBoxWorld
 		@angle = null
 		
 		@connector = @callingObj.connector
-		if @callingObj.getRound() <= 0 and @callingObj.getStage() == 1
+		if @callingObj.getRound() <= 0 and @callingObj.getStage() == 0
 			@callingObj.setId(@connector.submitAuthentication())
 		
 		# set up EaselJS

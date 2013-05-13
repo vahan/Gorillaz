@@ -374,7 +374,7 @@
       this.banana = null;
       this.angle = null;
       this.connector = this.callingObj.connector;
-      if (this.callingObj.getRound() <= 0 && this.callingObj.getStage() === 1) {
+      if (this.callingObj.getRound() <= 0 && this.callingObj.getStage() === 0) {
         this.callingObj.setId(this.connector.submitAuthentication());
       }
       this.easelStage = new Stage(canvas);

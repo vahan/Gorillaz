@@ -1,9 +1,9 @@
 ROUND = 0
-STAGE = 1
+STAGE = 0
 MAX_ROUNDS = 5
 MAX_STAGES = 8
 NEXT_ROUND = 0
-NEXT_STAGE = 1
+NEXT_STAGE = 0
 UPDATE_INTERVAL = 50
 
 class window.GorillasGame
@@ -242,10 +242,10 @@ class window.GorillasGame
 			return @getRound() - 1
 	
 	getPreviousStage: () ->
-		if @getStage() == 0
-			return @getStage()
-		else
+		if @getStage() > 0
 			return @getStage() - 1
+		else
+			return @getStage()
 	
 	next: () ->
 		if @nextButton.visible == true
