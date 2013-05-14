@@ -52,7 +52,7 @@ class window.Connector
 	
 	requestMean: () ->
 		console.log "requesting mean for game id: " + @game.getId()
-		@mean = -1
+		@mean = []
 		$.ajax LOCATION,
 			type: "POST"
 			dataType: 'html'
@@ -60,12 +60,12 @@ class window.Connector
 			data:
 				request: 'mean'
 				round: @game.getPreviousRound()
-				stage: @game.getPreviousStage()
+				stage: @game.getStage()
 				id: @game.getId()
 			error: (jqXHR, textStatus, errorThrown) =>
 				@error(errorThrown)
 			success: (data, textStatus, jqXHR) =>
-				@mean = data
+				@mean = data.split(' ');
 				console.log "mean angle: " + @mean
 		return(@mean)
 	

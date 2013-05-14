@@ -1,3 +1,6 @@
+MAX_ANGLE = Math.PI/4
+MIN_ANGLE = -Math.PI/2
+
 class window.EaselBoxMonkey
 
   constructor: (@callingObject,options) ->
@@ -77,11 +80,12 @@ class window.EaselBoxMonkey
       @easelObj.angle = @prev_angle
       @easelObj.gotoAndPlay("approachbazooka")
         
-      eventPress.onMouseMove = (event) =>        
+      eventPress.onMouseMove = (event) =>
         #90-theta-beta
-        @easelObj.angle=@prev_angle+Math.PI/2 - 
+        newAngle = @prev_angle + Math.PI/2 - 
                        Math.atan2(@easelObj.globalRegY-event.stageY,event.stageX-@easelObj.globalRegX)-
                        Math.atan2(eventPress.stageX-@easelObj.globalRegX,@easelObj.globalRegY-eventPress.stageY)
+        @easelObj.angle = newAngle if newAngle >= MIN_ANGLE and newAngle <= MAX_ANGLE
         @setState(
           angleRadians: @easelObj.angle,
           xPixels: @easelObj.x, 

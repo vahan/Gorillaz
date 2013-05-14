@@ -266,7 +266,7 @@ class window.EaselBoxWorld
 			@infoBar.addChild arr
 			@responseArrows.push(arr)
 		for arr, i in @responseArrows
-			@infoBar.getChildAt(@infoBar.getChildIndex(@responseArrows[i])).rotation = -angle
+			@infoBar.getChildAt(@infoBar.getChildIndex(@responseArrows[i])).rotation = -angle[i]
 		
 	
 	addEntity: (options) -> 
@@ -309,7 +309,7 @@ class window.EaselBoxWorld
 
 	
 	updateInfoBar: (angle) ->
-		angleDegree = Math.round(angle * 180 / Math.PI)
+		angleDegree = Math.round(angle * 180 * 10 / Math.PI) / 10
 		if @arrow? 
 			@arrow.rotation = angleDegree
 			@playerAngle.text = "your angle: " + angleDegree * -1
@@ -320,7 +320,7 @@ class window.EaselBoxWorld
 			@responseInfo.x = 0
 			@responseInfo.y = 50
 			@infoBar.addChild @responseInfo
-		@responseInfo.text = "mean angle: "  + Math.round(@meanAngle)
+		@responseInfo.text = "mean angle: "  + Math.round(@meanAngle[0])
 	
 	
 	getRound: () ->

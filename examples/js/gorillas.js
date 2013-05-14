@@ -69,7 +69,7 @@
     Connector.prototype.requestMean = function() {
       var _this = this;
       console.log("requesting mean for game id: " + this.game.getId());
-      this.mean = -1;
+      this.mean = [];
       $.ajax(LOCATION, {
         type: "POST",
         dataType: 'html',
@@ -77,14 +77,14 @@
         data: {
           request: 'mean',
           round: this.game.getPreviousRound(),
-          stage: this.game.getPreviousStage(),
+          stage: this.game.getStage(),
           id: this.game.getId()
         },
         error: function(jqXHR, textStatus, errorThrown) {
           return _this.error(errorThrown);
         },
         success: function(data, textStatus, jqXHR) {
-          _this.mean = data;
+          _this.mean = data.split(' ');
           return console.log("mean angle: " + _this.mean);
         }
       });
