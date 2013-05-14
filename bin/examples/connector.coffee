@@ -66,7 +66,7 @@ class window.Connector
 				@error(errorThrown)
 			success: (data, textStatus, jqXHR) =>
 				@mean = data.split(' ');
-				console.log "mean angle: " + @mean
+				console.log "mean angles: " + @mean
 		return(@mean)
 	
 	

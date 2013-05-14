@@ -50,16 +50,15 @@ class window.EaselBoxWorld
 		
 		@arrow = null
 		@arrowDrawn = false
-		@responseArrows = []
-		@responseArrowsDrawn = false
-		
 		@submitted = false
+		
+		@responseArrows = new Container();
 	
 	addMeanInfo: () ->
 		if (@callingObj.getRound() > 1)
-			@meanAngle = @connector.requestMean()
-			if (@meanAngle != "NO")
-				@addResponseArrow(170, @meanAngle)
+			@meanAngles = @connector.requestMean()
+			if (@meanAngles != "NO")
+				@addResponseArrows(170, @meanAngles)
 				@addResponseInfo()
 			else
 				alert "mean angle request returned NO"
@@ -252,22 +251,26 @@ class window.EaselBoxWorld
 		@infoBar.addChild @arrow
 		return @arrow
 	
-	addResponseArrow: (x, angle) ->
-		if @responseArrows.length == 0
+	addResponseArrows: (x, angles) ->
+		if @infoBar.contains(@responseArrows)
+			@infoBar.removeChild @responseArrows
+			
+		@responseArrows = new Container()
+		@responseArrows.x = 0
+		@responseArrows.y = 30
+		@infoBar.addChild @responseArrows
+		
+		for angle, i in angles
 			arr = new Bitmap("/img/ARROW/arrow.jpg")
-			arr.x = x
-			arr.y = 30
+			arr.x = x + 80*i
+			#arr.y = 30
 			arr.scaleX = 0.15
 			arr.scaleY = 0.1
 			arr.regX = arr.image.width / 2
 			arr.regY = arr.image.height / 2
-			arr.rotation = -angle
+			arr.rotation = -angles[i]
 			arr.visible = true
-			@infoBar.addChild arr
-			@responseArrows.push(arr)
-		for arr, i in @responseArrows
-			@infoBar.getChildAt(@infoBar.getChildIndex(@responseArrows[i])).rotation = -angle[i]
-		
+			@responseArrows.addChild arr
 	
 	addEntity: (options) -> 
 		object = null
@@ -320,7 +323,7 @@ class window.EaselBoxWorld
 			@responseInfo.x = 0
 			@responseInfo.y = 50
 			@infoBar.addChild @responseInfo
-		@responseInfo.text = "mean angle: "  + Math.round(@meanAngle[0])
+		@responseInfo.text = "mean angle: "  + Math.round(@meanAngles[0] * 10) / 10
 	
 	
 	getRound: () ->
@@ -365,14 +368,6 @@ class window.EaselBoxWorld
 		# check to see if main object has a callback for each tick
 		if typeof @callingObj.tick == 'function'
 			@callingObj.tick()
-		
-		if !@responseArrowsDrawn
-			for arr in @responseArrows
-				do (arr) ->
-					if arr.image.width > 0 and arr.image.height > 0
-						arr.regX = arr.image.width / 2
-						arr.regY = arr.image.height / 2
-						@responseArrowsDrawn = true
 		
 		if @arrow? and @arrow.image.width > 0 and !@arrowDrawn
 			@arrow.regX = @arrow.image.width / 2

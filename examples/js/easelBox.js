@@ -399,16 +399,15 @@
       this.box2dWorld.SetDebugDraw(debugDraw);
       this.arrow = null;
       this.arrowDrawn = false;
-      this.responseArrows = [];
-      this.responseArrowsDrawn = false;
       this.submitted = false;
+      this.responseArrows = new Container();
     }
 
     EaselBoxWorld.prototype.addMeanInfo = function() {
       if (this.callingObj.getRound() > 1) {
-        this.meanAngle = this.connector.requestMean();
-        if (this.meanAngle !== "NO") {
-          this.addResponseArrow(170, this.meanAngle);
+        this.meanAngles = this.connector.requestMean();
+        if (this.meanAngles !== "NO") {
+          this.addResponseArrows(170, this.meanAngles);
           return this.addResponseInfo();
         } else {
           return alert("mean angle request returned NO");
@@ -618,26 +617,27 @@
       return this.arrow;
     };
 
-    EaselBoxWorld.prototype.addResponseArrow = function(x, angle) {
-      var arr, i, _i, _len, _ref, _results;
-      if (this.responseArrows.length === 0) {
+    EaselBoxWorld.prototype.addResponseArrows = function(x, angles) {
+      var angle, arr, i, _i, _len, _results;
+      if (this.infoBar.contains(this.responseArrows)) {
+        this.infoBar.removeChild(this.responseArrows);
+      }
+      this.responseArrows = new Container();
+      this.responseArrows.x = 0;
+      this.responseArrows.y = 30;
+      this.infoBar.addChild(this.responseArrows);
+      _results = [];
+      for (i = _i = 0, _len = angles.length; _i < _len; i = ++_i) {
+        angle = angles[i];
         arr = new Bitmap("/img/ARROW/arrow.jpg");
-        arr.x = x;
-        arr.y = 30;
+        arr.x = x + 80 * i;
         arr.scaleX = 0.15;
         arr.scaleY = 0.1;
         arr.regX = arr.image.width / 2;
         arr.regY = arr.image.height / 2;
-        arr.rotation = -angle;
+        arr.rotation = -angles[i];
         arr.visible = true;
-        this.infoBar.addChild(arr);
-        this.responseArrows.push(arr);
-      }
-      _ref = this.responseArrows;
-      _results = [];
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        arr = _ref[i];
-        _results.push(this.infoBar.getChildAt(this.infoBar.getChildIndex(this.responseArrows[i])).rotation = -angle[i]);
+        _results.push(this.responseArrows.addChild(arr));
       }
       return _results;
     };
@@ -705,7 +705,7 @@
         this.responseInfo.y = 50;
         this.infoBar.addChild(this.responseInfo);
       }
-      return this.responseInfo.text = "mean angle: " + Math.round(this.meanAngle[0]);
+      return this.responseInfo.text = "mean angle: " + Math.round(this.meanAngles[0] * 10) / 10;
     };
 
     EaselBoxWorld.prototype.getRound = function() {
@@ -749,7 +749,7 @@
     };
 
     EaselBoxWorld.prototype.tick = function() {
-      var arr, object, _fn, _i, _j, _len, _len1, _ref, _ref1;
+      var object, _i, _len, _ref;
       if (Ticker.getMeasuredFPS() > minFPS) {
         this.box2dWorld.Step(1 / Ticker.getMeasuredFPS(), 10, 10);
         this.box2dWorld.ClearForces();
@@ -761,20 +761,6 @@
       }
       if (typeof this.callingObj.tick === 'function') {
         this.callingObj.tick();
-      }
-      if (!this.responseArrowsDrawn) {
-        _ref1 = this.responseArrows;
-        _fn = function(arr) {
-          if (arr.image.width > 0 && arr.image.height > 0) {
-            arr.regX = arr.image.width / 2;
-            arr.regY = arr.image.height / 2;
-            return this.responseArrowsDrawn = true;
-          }
-        };
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          arr = _ref1[_j];
-          _fn(arr);
-        }
       }
       if ((this.arrow != null) && this.arrow.image.width > 0 && !this.arrowDrawn) {
         this.arrow.regX = this.arrow.image.width / 2;

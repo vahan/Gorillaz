@@ -85,7 +85,7 @@
         },
         success: function(data, textStatus, jqXHR) {
           _this.mean = data.split(' ');
-          return console.log("mean angle: " + _this.mean);
+          return console.log("mean angles: " + _this.mean);
         }
       });
       return this.mean;
