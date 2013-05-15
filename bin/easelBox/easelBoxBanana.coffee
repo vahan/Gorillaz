@@ -43,6 +43,9 @@ class window.EaselBoxBanana
 		#console.log "banana isOver. launched=" + @launched + "; body.IsAwake()=" + @body.IsAwake()
 		@launched == true and !@body.IsAwake()
 	
+	getPosition: () ->
+		return @body.GetPosition()
+	
 	#update canvas position based on the physical position of the torso!
 	update: () ->
 		@easelObj.x = @body.GetPosition().x * PIXELS_PER_METER

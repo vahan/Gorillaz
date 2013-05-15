@@ -293,7 +293,7 @@
       }
       this.world.reset();
       this.world.removeEntity(this.world.getBanana());
-      if (ROUND <= 0) {
+      if (ROUND <= 0 || ROUND === MAX_ROUNDS) {
         this.world.addBanana({
           imgSrc: "/img/BANANA/banana.png",
           scaleX: 1,
@@ -421,10 +421,10 @@
       if (this.time > UPDATE_INTERVAL) {
         console.log("ask for next");
         this.time = 0;
-        if (this.world.getRound() === 0 && this.world.getBanana() !== null && this.world.getBanana().isOver() && !this.world.isSubmitted()) {
+        if ((this.world.getRound() === 0 || this.world.getRound() === MAX_ROUNDS) && this.world.getBanana() !== null && (this.world.getBanana().isOver() || this.world.getBanana().getPosition().y > this.voffset) && !this.world.isSubmitted()) {
           this.world.submit();
           return this.next();
-        } else if (this.world.getRound() > 0 && this.world.isSubmitted()) {
+        } else if ((this.world.getRound() > 0 && this.world.getRound() < MAX_ROUNDS) && this.world.isSubmitted()) {
           console.log("world is submitted");
           return this.next();
         }

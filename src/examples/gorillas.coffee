@@ -135,7 +135,7 @@ class window.GorillasGame
 		@world.reset()
 		
 		@world.removeEntity(@world.getBanana())
-		if ROUND <= 0
+		if ROUND <= 0 or ROUND == MAX_ROUNDS
 			@world.addBanana(
 				imgSrc: "/img/BANANA/banana.png"
 				scaleX: 1,
@@ -278,10 +278,10 @@ class window.GorillasGame
 		if @time > UPDATE_INTERVAL
 			console.log "ask for next"
 			@time = 0
-			if @world.getRound() == 0 and @world.getBanana() != null and @world.getBanana().isOver() and !@world.isSubmitted()
+			if (@world.getRound() == 0 or @world.getRound() == MAX_ROUNDS) and @world.getBanana() != null and (@world.getBanana().isOver() or @world.getBanana().getPosition().y > @voffset) and !@world.isSubmitted()
 				@world.submit()
 				@next()
-			else if @world.getRound() > 0 and @world.isSubmitted()
+			else if (@world.getRound() > 0 and @world.getRound() < MAX_ROUNDS) and @world.isSubmitted()
 				console.log "world is submitted"
 				@next()
 		

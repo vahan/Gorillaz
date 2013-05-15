@@ -552,9 +552,9 @@
 
     EaselBoxWorld.prototype.shoot = function(x, y, angle) {
       this.angle = angle;
-      if (this.callingObj.getRound() === 0) {
+      if (this.callingObj.getRound() === 0 || this.callingObj.getRound() === MAX_ROUNDS) {
         return this.shootBanana(x, y, angle);
-      } else if (this.callingObj.getRound() > 0) {
+      } else if (this.callingObj.getRound() > 0 && this.callingObj.getRound() < MAX_ROUNDS) {
         return this.submit();
       }
     };
@@ -906,6 +906,10 @@
 
     EaselBoxBanana.prototype.isOver = function() {
       return this.launched === true && !this.body.IsAwake();
+    };
+
+    EaselBoxBanana.prototype.getPosition = function() {
+      return this.body.GetPosition();
     };
 
     EaselBoxBanana.prototype.update = function() {

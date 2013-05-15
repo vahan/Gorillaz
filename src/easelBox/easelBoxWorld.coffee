@@ -188,9 +188,9 @@ class window.EaselBoxWorld
 
 	shoot: (x, y, angle) ->
 		@angle = angle
-		if @callingObj.getRound() == 0
+		if @callingObj.getRound() == 0 or @callingObj.getRound() == MAX_ROUNDS
 			@shootBanana(x, y, angle)
-		else if @callingObj.getRound() > 0
+		else if @callingObj.getRound() > 0 and @callingObj.getRound() < MAX_ROUNDS
 			@submit()
 	
 	shootBanana: (x, y, angle) ->
