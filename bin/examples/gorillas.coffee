@@ -4,6 +4,7 @@ MAX_ROUNDS = 5
 MAX_STAGES = 8
 NEXT_ROUND = 0
 NEXT_STAGE = 0
+WIND = 0
 UPDATE_INTERVAL = 50
 
 class window.GorillasGame
@@ -48,7 +49,7 @@ class window.GorillasGame
 		console.log "Round " + ROUND
 		
 		game = new GorillasGame(canvas, debugCanvas, statsCanvas, -1)
-	
+		
 	
 	constructor: (canvas, debugCanvas, statsCanvas, id) ->
 		@time = 0
@@ -57,6 +58,7 @@ class window.GorillasGame
 		@connector = new Connector(this)
 		@voffset = canvas.height*0.85
 		@world = new EaselBoxWorld(this, frameRate, canvas, debugCanvas, gravityX, gravityY, PIXELS_PER_METER)
+		@world.addWindArrow(WIND)
 		
 		@world.addLandscape(
 			width:canvas.width,
@@ -233,6 +235,13 @@ class window.GorillasGame
 	getStage: () ->
 		STAGE
 	
+	getWind: () ->
+		WIND
+		
+	setWind: (wind) ->
+		WIND = wind
+		console.log "wind: " + WIND
+	
 	getPreviousRound: () ->
 		if @getRound() == 0
 			return @getRound()
@@ -260,6 +269,9 @@ class window.GorillasGame
 		splitted = next.split ":"
 		NEXT_STAGE = +splitted[0]
 		NEXT_ROUND = +splitted[1]
+		WIND = +splitted[2]
+		@world.addWindArrow(WIND)
+		console.log "wind: " + WIND
 		return next
 	
 	updateRound: () ->

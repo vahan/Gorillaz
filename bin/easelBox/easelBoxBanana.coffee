@@ -41,7 +41,7 @@ class window.EaselBoxBanana
 
 	isOver: () ->
 		#console.log "banana isOver. launched=" + @launched + "; body.IsAwake()=" + @body.IsAwake()
-		@launched == true and !@body.IsAwake()
+		@launched == true and (!@body.IsAwake() or @body.GetLinearVelocity().LengthSquared() < 0.01)
 	
 	getPosition: () ->
 		return @body.GetPosition()

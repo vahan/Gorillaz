@@ -198,8 +198,8 @@ class window.EaselBoxWorld
 			@easelStage.addChild @banana.easelObj
 			@banana.setState(xPixels: x, yPixels:y)
 			@banana.setType("dynamic")
-			force = new Box2D.Common.Math.b2Vec2(Math.cos(angle)*40,Math.sin(angle)*(-40))
-			position = new Box2D.Common.Math.b2Vec2(@banana.body.GetPosition().x,@banana.body.GetPosition().y)
+			force = new Box2D.Common.Math.b2Vec2(Math.cos(angle)*40, Math.sin(angle)*(-40))
+			position = new Box2D.Common.Math.b2Vec2(@banana.body.GetPosition().x, @banana.body.GetPosition().y)
 			#@banana.body.SetAwake(true)
 			#@banana.body.SetLinearVelocity(force)
 			@banana.body.ApplyImpulse(force,position)
@@ -272,6 +272,24 @@ class window.EaselBoxWorld
 			arr.visible = true
 			@responseArrows.addChild arr
 	
+	addWindArrow: (wind) ->
+		if @infoBar.contains(@windArrow)
+			@infoBar.removeChild @windArrow
+		@windArrow = new Container()
+		@windArrow.x = 600
+		@windArrow.y = -20
+		@infoBar.addChild @windArrow
+		
+		arr = new Bitmap("/img/ARROW/wind.jpg")
+		arr.regX = arr.image.width / 2
+		arr.regY = arr.image.height / 2
+		arr.rotation = 180 if wind < 0
+		arr.scaleX = 0.05 * Math.abs(wind)
+		arr.scaleY = 0.1
+		arr.visible = true
+		@windArrow.addChild arr
+	
+	
 	addEntity: (options) -> 
 		object = null
 		if options.whoami
@@ -325,7 +343,6 @@ class window.EaselBoxWorld
 			@infoBar.addChild @responseInfo
 		@responseInfo.text = "mean angle: "  + Math.round(@meanAngles[0] * 10) / 10
 	
-	
 	getRound: () ->
 		@callingObj.getRound()
 	
@@ -358,10 +375,17 @@ class window.EaselBoxWorld
 		@easelStage.update()
 		
 	
+	applyWind: () ->
+		wind = new Box2D.Common.Math.b2Vec2(@callingObj.getWind())
+		position = new Box2D.Common.Math.b2Vec2(@banana.body.GetPosition().x, @banana.body.GetPosition().y)
+		@banana.body.ApplyForce(wind, position)
+	
+	
 	tick: ->
 		if Ticker.getMeasuredFPS() > minFPS
 			@box2dWorld.Step (1 / Ticker.getMeasuredFPS()), 10, 10 
 			@box2dWorld.ClearForces()
+			@applyWind()
 			for object in @objects
 				object.update()
 		

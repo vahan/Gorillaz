@@ -20,10 +20,14 @@ class window.Connector
 				@error(errorThrown)
 			success: (data, textStatus, jqXHR) =>
 				console.log "feedback: " + data
-				if data >= 0
-					@game.setId(data)
+				splitted = data.split ":"
+				id = +splitted[0]
+				if id >= 0
+					@game.setId(id)
 				else
-					@error("illegal id was returned while trying to authenticate: " + data)
+					@error("illegal id was returned while trying to authenticate: " + id)
+				wind = +splitted[1]
+				@game.setWind(wind)
 				
 		console.log "Authenticated as: " + @game.getId()
 		return(@game.getId())
@@ -89,26 +93,6 @@ class window.Connector
 				next = data
 				console.log "to next: " + next
 		return next
-	
-	
-	submit: (request, specData, success, result) =>
-		data=
-			request: request
-			round: @game.getRound()
-			stage: @game.getStage()
-		$.merge data, specData
-		
-		$.ajax LOCATION,
-			type: "POST"
-			dataType: 'html'
-			async: false
-			data: data
-			error: (jqXHR, textStatus, errorThrown) =>
-				@error(errorThrown)
-			success: success
-		return(result)
-	
-	
 	
 	error: (code) ->
 		console.log "Ajax error. Error code: " + code		

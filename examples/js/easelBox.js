@@ -642,6 +642,27 @@
       return _results;
     };
 
+    EaselBoxWorld.prototype.addWindArrow = function(wind) {
+      var arr;
+      if (this.infoBar.contains(this.windArrow)) {
+        this.infoBar.removeChild(this.windArrow);
+      }
+      this.windArrow = new Container();
+      this.windArrow.x = 600;
+      this.windArrow.y = -20;
+      this.infoBar.addChild(this.windArrow);
+      arr = new Bitmap("/img/ARROW/wind.jpg");
+      arr.regX = arr.image.width / 2;
+      arr.regY = arr.image.height / 2;
+      if (wind < 0) {
+        arr.rotation = 180;
+      }
+      arr.scaleX = 0.05 * Math.abs(wind);
+      arr.scaleY = 0.1;
+      arr.visible = true;
+      return this.windArrow.addChild(arr);
+    };
+
     EaselBoxWorld.prototype.addEntity = function(options) {
       var object;
       object = null;
@@ -748,11 +769,19 @@
       return this.easelStage.update();
     };
 
+    EaselBoxWorld.prototype.applyWind = function() {
+      var position, wind;
+      wind = new Box2D.Common.Math.b2Vec2(this.callingObj.getWind());
+      position = new Box2D.Common.Math.b2Vec2(this.banana.body.GetPosition().x, this.banana.body.GetPosition().y);
+      return this.banana.body.ApplyForce(wind, position);
+    };
+
     EaselBoxWorld.prototype.tick = function() {
       var object, _i, _len, _ref;
       if (Ticker.getMeasuredFPS() > minFPS) {
         this.box2dWorld.Step(1 / Ticker.getMeasuredFPS(), 10, 10);
         this.box2dWorld.ClearForces();
+        this.applyWind();
         _ref = this.objects;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           object = _ref[_i];
@@ -905,7 +934,7 @@
     };
 
     EaselBoxBanana.prototype.isOver = function() {
-      return this.launched === true && !this.body.IsAwake();
+      return this.launched === true && (!this.body.IsAwake() || this.body.GetLinearVelocity().LengthSquared() < 0.01);
     };
 
     EaselBoxBanana.prototype.getPosition = function() {
