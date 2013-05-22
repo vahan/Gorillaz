@@ -1,5 +1,5 @@
-MAX_ANGLE = Math.PI/4
-MIN_ANGLE = -Math.PI/2
+MAX_ANGLE = Math.PI/8
+MIN_ANGLE = -Math.PI/2.2
 
 class window.EaselBoxMonkey
 
@@ -10,8 +10,8 @@ class window.EaselBoxMonkey
     @spriteSheet = options.SpriteSheet
     @easelObj = new BitmapAnimation(@spriteSheet)
     @easelObj.gotoAndPlay("standby")
-    @easelObj.name = "monkey_idle"    
-    @easelObj.currentFrame = 0      
+    @easelObj.name = "monkey_idle"
+    @easelObj.currentFrame = 0
     @easelObj.x = options.xPixels
     @easelObj.y = options.yPixels
     @easelObj.regX = options.regX
@@ -21,7 +21,7 @@ class window.EaselBoxMonkey
     @easelObj.globalRegX =  options.xPixels
     @easelObj.globalRegY =  options.yPixels
     @easelObj.angle=0 
-    @prev_angle=0   
+    @prev_angle=0
     
     #INIT THE BOX2D COMPLEX SHAPE   
     @size_head_meters = options.size_head / PIXELS_PER_METER

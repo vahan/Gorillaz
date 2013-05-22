@@ -71,94 +71,6 @@ class window.GorillasGame
 		
 		@arrow = @world.addArrow()
 		
-		@draw()
-		
-		@monkey2 = @world.addMonkey(
-			SpriteSheet:  new SpriteSheet(
-				images: ["/img/BREATH/right_breath1-resized.png",
-									"/img/BREATH/right_breath2-resized.png",
-									"/img/BREATH/right_breath3-resized.png",
-									"/img/BREATH/right_breath4-resized.png"],
-				frames: {width:308,height:308}
-				animations: {standby:[0,3,"standby",5]}
-			),
-			scaleX: 0.5,
-			scaleY: 0.5,
-			#sizes (=half the side length of the respective square) in pixels. 
-			#Coordinates of the body parts are relative to the location of the torso
-			size_head: 15,
-			size_torso: 20,
-			size_lowerbody: 22,
-			density: 2,
-			friction: 0.8,
-			restitution: 0.3,
-			#location of the torso's center in pixels
-			xPixels: canvas.width-22-38, 
-			yPixels: @voffset-20-22*2,
-			regX:308/2,
-			regY:308/2+20,
-			#location of the easel object
-			easelx: 100,
-			easely: 100
-		)
-		
-		###@tower2 = @world.addTower(
-			imgSrc: "/img/TOWER/tower.png"
-			scaleX: 0.4,
-			scaleY: 0.3,    
-			#the position of the easeljs object
-			xPixels: canvas.width-22-38-100,
-			yPixels: @voffset-125
-		)###
-		
-		@nextButton = new Bitmap("/img/LANDSCAPE/Next.gif")
-		@nextButton.x = 500
-		@nextButton.y = 80
-		@nextButton.scaleX = 0.3
-		@nextButton.scaleY = 0.3
-		@nextButton.visible = false
-		@nextButton.onClick = (event) =>
-			console.log "Next clicked"
-			ROUND = NEXT_ROUND
-			STAGE = NEXT_STAGE
-			@draw()
-			@updateRound()
-			#game = new GorillasGame(canvas, debugCanvas, statsCanvas, @id, true)
-			return false #Needed to prevent double calling the event. And yes, it's ugly!
-		@world.easelStage.addChild @nextButton 
-		
-		@updateRound()
-	
-	
-	draw: () ->
-		console.log "button is visible: " + @nextButton.visible if @nextButton?	
-		@nextButton.visible = false if @nextButton?
-		console.log "button is visible: " + @nextButton.visible if @nextButton?
-		@world.reset()
-		
-		@world.removeEntity(@world.getBanana())
-		if ROUND <= 0 or ROUND == MAX_ROUNDS
-			@world.addBanana(
-				imgSrc: "/img/BANANA/banana.png"
-				scaleX: 1,
-				scaleY: 1,
-				density: 1,
-				friction: 0,
-				restitution: 0,
-				#dimensions of the  Box2D rectangle in pixels 
-				width: 40,
-				height: 20,
-				#the position of the easeljs object
-				#xPixels: (muzzle x coord. of bazooka - monkey.regX)*monkey.scaleX + monkey.xPixels
-				xPixels: (625-110)*0.3 + 75
-				#yPixels: (monkey.yPixels-5)-(monkey.regY-muzzle y coord. of bazooka)*monkey.scaleY
-				yPixels: (@voffset-5) - (550-240)*0.3
-				regX: 20,
-				regY: 20,
-			)
-			
-		
-		@world.removeEntity(@monkey1)
 		@monkey1 = @world.addMonkey(
 			SpriteSheet:  new SpriteSheet(
 				images: ["/img/BREATH3/left/breath_left_1.png",
@@ -208,6 +120,91 @@ class window.GorillasGame
 			regY: 165-15,#550,
 			voffset: @voffset
 		)
+		
+		@draw()
+		
+		@monkey2 = @world.addMonkey(
+			SpriteSheet:  new SpriteSheet(
+				images: ["/img/BREATH/right_breath1-resized.png",
+									"/img/BREATH/right_breath2-resized.png",
+									"/img/BREATH/right_breath3-resized.png",
+									"/img/BREATH/right_breath4-resized.png"],
+				frames: {width:308,height:308}
+				animations: {standby:[0,3,"standby",5]}
+			),
+			scaleX: 0.5,
+			scaleY: 0.5,
+			#sizes (=half the side length of the respective square) in pixels. 
+			#Coordinates of the body parts are relative to the location of the torso
+			size_head: 15,
+			size_torso: 20,
+			size_lowerbody: 22,
+			density: 2,
+			friction: 0.8,
+			restitution: 0.3,
+			#location of the torso's center in pixels
+			xPixels: canvas.width-22-38, 
+			yPixels: @voffset-20-22*2,
+			regX:308/2,
+			regY:308/2+20,
+			#location of the easel object
+			easelx: 100,
+			easely: 100
+		)
+		
+		###@tower2 = @world.addTower(
+			imgSrc: "/img/TOWER/tower.png"
+			scaleX: 0.4,
+			scaleY: 0.3,    
+			#the position of the easeljs object
+			xPixels: canvas.width-22-38-100,
+			yPixels: @voffset-125
+		)###
+		
+		@nextButton = new Bitmap("/img/LANDSCAPE/Next.gif")
+		@nextButton.x = 500
+		@nextButton.y = 80
+		@nextButton.scaleX = 0.3
+		@nextButton.scaleY = 0.3
+		@nextButton.visible = false
+		@nextButton.onClick = (event) =>
+			ROUND = NEXT_ROUND
+			STAGE = NEXT_STAGE
+			@draw()
+			@updateRound()
+			#game = new GorillasGame(canvas, debugCanvas, statsCanvas, @id, true)
+			return false #Needed to prevent double calling the event. And yes, it's ugly!
+		@world.easelStage.addChild @nextButton 
+		
+		@updateRound()
+	
+	
+	draw: () ->
+		@nextButton.visible = false if @nextButton?
+		@world.reset()
+		
+		@world.removeEntity(@world.getBanana())
+		if ROUND <= 0 or ROUND == MAX_ROUNDS
+			@world.addBanana(
+				imgSrc: "/img/BANANA/banana.png"
+				scaleX: 1,
+				scaleY: 1,
+				density: 1,
+				friction: 0,
+				restitution: 0,
+				#dimensions of the  Box2D rectangle in pixels 
+				width: 40,
+				height: 20,
+				#the position of the easeljs object
+				#xPixels: (muzzle x coord. of bazooka - monkey.regX)*monkey.scaleX + monkey.xPixels
+				xPixels: (625-110)*0.3 + 75
+				#yPixels: (monkey.yPixels-5)-(monkey.regY-muzzle y coord. of bazooka)*monkey.scaleY
+				yPixels: (@voffset-5) - (550-240)*0.3
+				regX: 20,
+				regY: 20,
+			)
+			
+		
 		@monkey1.addActionListeners()
 		
 		@world.removeEntity(@tower1)
@@ -221,6 +218,8 @@ class window.GorillasGame
 		)
 		
 		@world.addMeanInfo()
+		
+		@world.box2dWorld.DrawDebugData()
 		
 	
 	getId: () ->
@@ -240,7 +239,6 @@ class window.GorillasGame
 		
 	setWind: (wind) ->
 		WIND = wind
-		console.log "wind: " + WIND
 	
 	getPreviousRound: () ->
 		if @getRound() == 0
@@ -278,6 +276,12 @@ class window.GorillasGame
 		document.getElementById("round").innerText = "Round " + ROUND + " of " + MAX_ROUNDS
 		document.getElementById("stage").innerText = "Stage " + STAGE + " of " + MAX_STAGES
 	
+	getMaxStages: () ->
+		MAX_STAGES
+	
+	getMaxRounds: () ->
+		MAX_ROUNDS
+	
 	# optional: a callback for each EaselBox2dWorld tick()
 	tick: () ->
 		for i in @world.contactlistener.contacts       
@@ -288,13 +292,11 @@ class window.GorillasGame
 		@time++
 		
 		if @time > UPDATE_INTERVAL
-			console.log "ask for next"
 			@time = 0
 			if (@world.getRound() == 0 or @world.getRound() == MAX_ROUNDS) and @world.getBanana() != null and (@world.getBanana().isOver() or @world.getBanana().getPosition().y > @voffset) and !@world.isSubmitted()
 				@world.submit()
 				@next()
 			else if (@world.getRound() > 0 and @world.getRound() < MAX_ROUNDS) and @world.isSubmitted()
-				console.log "world is submitted"
 				@next()
 		
 		#console.log "tick2"

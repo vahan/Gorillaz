@@ -210,6 +210,34 @@
         type: 'static'
       });
       this.arrow = this.world.addArrow();
+      this.monkey1 = this.world.addMonkey({
+        SpriteSheet: new SpriteSheet({
+          images: ["/img/BREATH3/left/breath_left_1.png", "/img/BREATH3/left/breath_left_2.png", "/img/BREATH3/left/breath_left_2_copy.png", "/img/BREATH3/left/breath_left_3.png", "/img/BREATH3/left/breath_left_3_copy.png", "/img/BREATH3/left/breath_left_4.png", "/img/BREATH3/left/breath_left_4_copy.png", "/img/BREATH3/left/breath_left_5.png", "/img/BREATH3/left/approach-left-1.png", "/img/BREATH3/left/approach-left-1_copy.png", "/img/BREATH3/left/approach-left-2.png", "/img/BREATH3/left/approach-left-2_copy.png", "/img/BREATH3/left/approach-left-3.png", "/img/BREATH3/left/approach-left-3_copy.png", "/img/BREATH3/left/approach-left-4.png", "/img/BREATH3/left/approach-left-4_copy.png", "/img/BREATH3/left/approach-left-5.png", "/img/BREATH3/left/approach-left-5_copy.png", "/img/BREATH3/left/approach-left-6.png", "/img/BREATH3/left/shoot_left_1.png", "/img/BREATH3/left/shoot_left_2.png"],
+          frames: {
+            width: 220,
+            height: 165,
+            count: 21
+          },
+          animations: {
+            standby: [0, 7, "standby", 2],
+            approachbazooka: [7, 18, false, 1],
+            shoot: [18, 20, false, 1]
+          }
+        }),
+        scaleX: 1,
+        scaleY: 1,
+        size_head: 20,
+        size_torso: 25,
+        size_lowerbody: 32,
+        density: 2,
+        friction: 0.8,
+        restitution: 0.3,
+        xPixels: 75,
+        yPixels: this.voffset - 75,
+        regX: 33,
+        regY: 165 - 15,
+        voffset: this.voffset
+      });
       this.draw();
       this.monkey2 = this.world.addMonkey({
         SpriteSheet: new SpriteSheet({
@@ -254,7 +282,6 @@
       this.nextButton.scaleY = 0.3;
       this.nextButton.visible = false;
       this.nextButton.onClick = function(event) {
-        console.log("Next clicked");
         ROUND = NEXT_ROUND;
         STAGE = NEXT_STAGE;
         _this.draw();
@@ -267,13 +294,7 @@
 
     GorillasGame.prototype.draw = function() {
       if (this.nextButton != null) {
-        console.log("button is visible: " + this.nextButton.visible);
-      }
-      if (this.nextButton != null) {
         this.nextButton.visible = false;
-      }
-      if (this.nextButton != null) {
-        console.log("button is visible: " + this.nextButton.visible);
       }
       this.world.reset();
       this.world.removeEntity(this.world.getBanana());
@@ -293,35 +314,6 @@
           regY: 20
         });
       }
-      this.world.removeEntity(this.monkey1);
-      this.monkey1 = this.world.addMonkey({
-        SpriteSheet: new SpriteSheet({
-          images: ["/img/BREATH3/left/breath_left_1.png", "/img/BREATH3/left/breath_left_2.png", "/img/BREATH3/left/breath_left_2_copy.png", "/img/BREATH3/left/breath_left_3.png", "/img/BREATH3/left/breath_left_3_copy.png", "/img/BREATH3/left/breath_left_4.png", "/img/BREATH3/left/breath_left_4_copy.png", "/img/BREATH3/left/breath_left_5.png", "/img/BREATH3/left/approach-left-1.png", "/img/BREATH3/left/approach-left-1_copy.png", "/img/BREATH3/left/approach-left-2.png", "/img/BREATH3/left/approach-left-2_copy.png", "/img/BREATH3/left/approach-left-3.png", "/img/BREATH3/left/approach-left-3_copy.png", "/img/BREATH3/left/approach-left-4.png", "/img/BREATH3/left/approach-left-4_copy.png", "/img/BREATH3/left/approach-left-5.png", "/img/BREATH3/left/approach-left-5_copy.png", "/img/BREATH3/left/approach-left-6.png", "/img/BREATH3/left/shoot_left_1.png", "/img/BREATH3/left/shoot_left_2.png"],
-          frames: {
-            width: 220,
-            height: 165,
-            count: 21
-          },
-          animations: {
-            standby: [0, 7, "standby", 2],
-            approachbazooka: [7, 18, false, 1],
-            shoot: [18, 20, false, 1]
-          }
-        }),
-        scaleX: 1,
-        scaleY: 1,
-        size_head: 20,
-        size_torso: 25,
-        size_lowerbody: 32,
-        density: 2,
-        friction: 0.8,
-        restitution: 0.3,
-        xPixels: 75,
-        yPixels: this.voffset - 75,
-        regX: 33,
-        regY: 165 - 15,
-        voffset: this.voffset
-      });
       this.monkey1.addActionListeners();
       this.world.removeEntity(this.tower1);
       this.tower1 = this.world.addTower({
@@ -331,7 +323,8 @@
         xPixels: 25,
         yPixels: this.voffset - 125
       });
-      return this.world.addMeanInfo();
+      this.world.addMeanInfo();
+      return this.world.box2dWorld.DrawDebugData();
     };
 
     GorillasGame.prototype.getId = function() {
@@ -355,8 +348,7 @@
     };
 
     GorillasGame.prototype.setWind = function(wind) {
-      WIND = wind;
-      return console.log("wind: " + WIND);
+      return WIND = wind;
     };
 
     GorillasGame.prototype.getPreviousRound = function() {
@@ -404,6 +396,14 @@
       return document.getElementById("stage").innerText = "Stage " + STAGE + " of " + MAX_STAGES;
     };
 
+    GorillasGame.prototype.getMaxStages = function() {
+      return MAX_STAGES;
+    };
+
+    GorillasGame.prototype.getMaxRounds = function() {
+      return MAX_ROUNDS;
+    };
+
     GorillasGame.prototype.tick = function() {
       var i, _i, _len, _ref;
       _ref = this.world.contactlistener.contacts;
@@ -415,13 +415,11 @@
       }
       this.time++;
       if (this.time > UPDATE_INTERVAL) {
-        console.log("ask for next");
         this.time = 0;
         if ((this.world.getRound() === 0 || this.world.getRound() === MAX_ROUNDS) && this.world.getBanana() !== null && (this.world.getBanana().isOver() || this.world.getBanana().getPosition().y > this.voffset) && !this.world.isSubmitted()) {
           this.world.submit();
           return this.next();
         } else if ((this.world.getRound() > 0 && this.world.getRound() < MAX_ROUNDS) && this.world.isSubmitted()) {
-          console.log("world is submitted");
           return this.next();
         }
       }

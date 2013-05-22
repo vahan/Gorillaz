@@ -1,6 +1,4 @@
 PIXELS_PER_METER = 22
-MAX_ROUNDS = 5
-MAX_STAGES = 8
 
 class window.EaselBoxWorld
 	minFPS = 10 # weird stuff happens when we step through the physics when the frame rate is lower than this
@@ -188,9 +186,9 @@ class window.EaselBoxWorld
 
 	shoot: (x, y, angle) ->
 		@angle = angle
-		if @callingObj.getRound() == 0 or @callingObj.getRound() == MAX_ROUNDS
+		if @callingObj.getRound() == 0 or @callingObj.getRound() == @callingObj.getMaxRounds()
 			@shootBanana(x, y, angle)
-		else if @callingObj.getRound() > 0 and @callingObj.getRound() < MAX_ROUNDS
+		else if @callingObj.getRound() > 0 and @callingObj.getRound() < @callingObj.getMaxRounds()
 			@submit()
 	
 	shootBanana: (x, y, angle) ->
@@ -254,23 +252,23 @@ class window.EaselBoxWorld
 	addResponseArrows: (x, angles) ->
 		if @infoBar.contains(@responseArrows)
 			@infoBar.removeChild @responseArrows
-			
+		
 		@responseArrows = new Container()
 		@responseArrows.x = 0
-		@responseArrows.y = 30
+		@responseArrows.y = 50
 		@infoBar.addChild @responseArrows
 		
 		for angle, i in angles
 			arr = new Bitmap("/img/ARROW/arrow.jpg")
-			arr.x = x + 80*i
-			#arr.y = 30
+			arr.x = x + 70*i
+			arr.y = 30
 			arr.scaleX = 0.15
 			arr.scaleY = 0.1
-			arr.regX = arr.image.width / 2
-			arr.regY = arr.image.height / 2
+			arr.regX = 175 #TODO: change to arr.image.width, which returns 0!
+			arr.regY = 135
 			arr.rotation = -angles[i]
-			arr.visible = true
 			@responseArrows.addChild arr
+			arr.visible = true
 	
 	addWindArrow: (wind) ->
 		if @infoBar.contains(@windArrow)
